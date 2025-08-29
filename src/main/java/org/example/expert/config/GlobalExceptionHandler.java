@@ -40,5 +40,20 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, status);
     }
+
+    // 커스텀 예외를 JSON 응답으로 변환
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationException(org.springframework.web.bind.MethodArgumentNotValidException ex) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        String errorMessage = ex.getBindingResult().getAllErrors()
+                .stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("잘못된 요청입니다.");
+
+        return getErrorResponse(status, errorMessage);
+    }
+
 }
 
